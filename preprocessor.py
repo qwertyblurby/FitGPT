@@ -70,68 +70,34 @@ if len(person_boxes) > 0:
     # Resize the cropped image to 200x600 pixels
     resized_image = cv2.resize(cropped_image, (200, 600))
 
+    # Remove background
+    pil_image = Image.fromarray(cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB))
+    nobg_image = remove(pil_image)
+    output_image = cv2.cvtColor(np.array(nobg_image), cv2.COLOR_RGB2BGR)
     
-    cv2.namedWindow("Detected Person", cv2.WINDOW_NORMAL)
-    cv2.resizeWindow("Detected Person", 400, 1200),
-    cv2.imshow("Detected Person", resized_image)
+    
+
+    # Define the transformation
+    transform = transforms.Compose([
+        transforms.Grayscale(num_output_channels=1)  # Convert to grayscale
+    ])
+
+    # Apply the transformation
+    grayscale_image = transform(Image.fromarray(cv2.cvtColor(output_image, cv2.COLOR_BGR2RGB)))
+
+    # Convert to CV2
+    preprocessed_image = cv2.cvtColor(np.array(grayscale_image), cv2.COLOR_GRAY2BGR)
+    
+    # Display
+    
+    cv2.imshow("Preprocessed Image", preprocessed_image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+    cv2.imwrite("preprocessed_image.png", preprocessed_image)
+    
 
 else:
     input("No person detected in the image.")
     quit()
-
-
-
-pil_image = Image.fromarray(cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB))
-nobg_image = remove(pil_image)
-output_image = cv2.cvtColor(np.array(nobg_image), cv2.COLOR_RGB2BGR)
-
-
-cv2.imshow("Detected Person", output_image)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-cv2.imwrite("output_image.png", output_image)
-
-
-'''
-
-
-
-
-# Define the transformation
-transform = transforms.Compose([
-    transforms.Grayscale(num_output_channels=1)  # Convert to grayscale
-])
-
-# Apply the transformation
-grayscale_image = transform(image)
-
-# Display or save the grayscale image
-#grayscale_image.show()
-grayscale_image.save("grayscale_image.png")
-
-width, height = grayscale_image.size
- 
-# Setting the points for cropped image
-left = 900
-top = height / 20
-right = 2000
-bottom = 10 * height / 10
- 
-# Cropped image of above dimension
-# (It will not change original image)
-im1 = grayscale_image.crop((left, top, right, bottom))
- 
-# Shows the image in image viewer
-im1.show()
-
-
-'''
-
-
-
-
-
 
 
