@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitGPT</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+    }
+    #imageInput {
+        margin-top: 20px;
+        padding-left: 70px;
+    }
+    #imagePreview {
+        max-width: 400px;
+        margin: 20px auto;
+    }
+</style>
+</head>
+<body>
+    <h1>FitGPT</h1>
+    <input type="file" id="imageInput" accept="image/*">
+    <br>
+    <br>
+    <button onclick="processImage()">Run</button>
+    <div id="imagePreview"></div>
+
+    <script>
+        function processImage() {
+            var input = document.getElementById('imageInput');
+            var preview = document.getElementById('imagePreview');
+
+            if (input.files && input.files[0]) {
+                var fileName = input.files[0].name; // Capture the file name
+                preview.innerHTML = '<p>Uploaded image: ' + fileName + '</p>';
+            } else {
+                preview.innerHTML = 'No image selected';
+            }
+        }
+    </script>
+</body>
+</html>
