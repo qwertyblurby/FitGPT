@@ -4,6 +4,7 @@ import torchvision.models as models
 import numpy as np
 import cv2
 from PIL import Image
+from rembg import remove 
 
 # Load the pre-trained Faster R-CNN model
 model = models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
@@ -69,26 +70,28 @@ if len(person_boxes) > 0:
     # Resize the cropped image to 200x600 pixels
     resized_image = cv2.resize(cropped_image, (200, 600))
 
-    if input("Show image? ") == "yes":
-        # Display the image
-        cv2.namedWindow("Detected Person", cv2.WINDOW_NORMAL)
-        cv2.resizeWindow("Detected Person", 400, 1200),
-        cv2.imshow("Detected Person", resized_image)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-    else:
-        cv2.imwrite("output_image.png", resized_image)
+    
+    cv2.namedWindow("Detected Person", cv2.WINDOW_NORMAL)
+    cv2.resizeWindow("Detected Person", 400, 1200),
+    cv2.imshow("Detected Person", resized_image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 else:
-    print("No person detected in the image.")
+    input("No person detected in the image.")
+    quit()
 
 
 
+pil_image = Image.fromarray(cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB))
+nobg_image = remove(pil_image)
+output_image = cv2.cvtColor(np.array(nobg_image), cv2.COLOR_RGB2BGR)
 
 
-
-
-
+cv2.imshow("Detected Person", output_image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+cv2.imwrite("output_image.png", output_image)
 
 
 '''
