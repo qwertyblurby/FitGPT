@@ -3,13 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Image</title>
+    <title>Image Uploader</title>
+    <!-- Linking Font Awesome CSS for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Linking your custom CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Upload Image</h1>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" accept="image/*">
-        <input type="submit" value="Upload">
-    </form>
+    <div class="container">
+        <h1>Image Uploader</h1>
+        <form action="/upload" method="post" enctype="multipart/form-data" onsubmit="return showConfirmation()">
+            <!-- File input field -->
+            <input type="file" name="file" id="fileInput" class="file-input" accept="image/*" onchange="updateLabel()">
+            <!-- Text label for file input -->
+            <label for="fileInput" class="file-label" id="fileLabel">Choose Image</label>
+            <!-- Submit button -->
+            <button type="submit" class="button">Upload</button>
+        </form>
+    </div>
+    <!-- JavaScript for updating file label and showing confirmation -->
+    <script>
+        // Function to update file label text
+        function updateLabel() {
+            var fileInput = document.getElementById('fileInput');
+            var fileLabel = document.getElementById('fileLabel');
+            if (fileInput.files.length > 0) {
+                fileLabel.textContent = fileInput.files[0].name;
+            } else {
+                fileLabel.textContent = 'Choose Image';
+            }
+        }
+
+        // Function to show confirmation message
+        function showConfirmation() {
+            var fileInput = document.getElementById('fileInput');
+            if (fileInput.files.length > 0) {
+                return true;
+            } else {
+                alert('Please choose a file to upload.');
+                return false;
+            }
+        }
+    </script>
 </body>
 </html>
