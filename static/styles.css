@@ -16,9 +16,17 @@ body {
     text-align: center;
 }
 
+h2 {
+    font-size: 24px; /* Slightly bigger font size */
+    margin-bottom: 20px; /* Moved down a little */
+    color: #333; /* Set color to dark gray */
+}
+
+/* Center the title */
 h1 {
-    font-size: 24px;
-    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+    font-size: 40px;
 }
 
 /* Styles for file input field */
