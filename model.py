@@ -2,7 +2,7 @@ import torchvision.transforms as transforms
 from PIL import Image
 
 # Load your image
-image = Image.open("input_image.jpg")
+image = Image.open("image.webp")
 
 # Define the transformation
 transform = transforms.Compose([
@@ -13,5 +13,5 @@ transform = transforms.Compose([
 grayscale_image = transform(image)
 
 # Display or save the grayscale image
-grayscale_image.show()
-# grayscale_image.save("grayscale_image.jpg")
+#grayscale_image.show()
+grayscale_image.save("grayscale_image.png")
