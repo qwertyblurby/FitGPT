@@ -9,3 +9,4 @@ for i in range(49, FILECOUNT+1):
         print("Processed image %s"%(i))
     except Exception as e:
         print("Error with image %s"%(i))
+    
