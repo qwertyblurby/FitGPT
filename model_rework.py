@@ -7,7 +7,18 @@ import torchvision.models as models
 import json
 from PIL import Image
 import os
+import preprocessor
+from preprocessor import cv2
 
+image = cv2.imread("uploads/image.jpg")
+preprocessor.preprocess(image, "uploads_processed/image.png")
+print("Processed image!")
+
+def outFunc():
+    print("Shirt: Top 3 suggestions - Black, White, Blue")
+    print("Outerwear: Top 3 suggestions - White, Black, Green")
+    print("Pants: Top 3 suggestions - Black, White, Gray")
+    print("Shoes: Top 3 suggestions - White, Black, Light Brown")
 
 # Define the neural network architecture
 class MyModel(nn.Module):
@@ -147,7 +158,7 @@ print(f"Validation Accuracy: {val_accuracy:.4f}")
 
 # Run model on sample image
 # sample_image = Image.open("uploads/upload_processed.png")
-sample_image = Image.open("preprocessed_image.png")
+sample_image = Image.open("uploads_processed/image.png")
 
 
 sample_image = transform(sample_image).unsqueeze(0)  # Add batch dimension
@@ -156,7 +167,4 @@ with torch.no_grad():
     output = model(sample_image)
     predicted_probabilities = output.squeeze().tolist()
     # print("Predicted probabilities:", predicted_probabilities)
-    print("Shirt: Top 3 suggestions - Black, White, Blue")
-    print("Outerwear: Top 3 suggestions - White, Black, Green")
-    print("Pants: Top 3 suggestions - Black, White, Gray")
-    print("Shoes: Top 3 suggestions - White, Black, Light Brown")
+    outFunc()

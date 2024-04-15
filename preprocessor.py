@@ -98,7 +98,7 @@ def preprocess(image, filename):
         cv2.destroyAllWindows()
         '''
         
-        cv2.imwrite("%s.png"%(filename), preprocessed_image)
+        cv2.imwrite(filename, preprocessed_image)
         
 
     else:
