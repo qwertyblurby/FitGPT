@@ -1,3 +1,3 @@
 # Welcome to FitGPT! 
 
-FitGPT is your personal fashion assistant powered by artificial intelligence. This app helps you determine outfits that you should wear, taking the stress out of getting dressed every day. 
+FitGPT is an AI model trained to help users determine the outfits they should be rocking. We have trained our AI with countless images of fashion models from various different brands, such as Lacoste, Zara, and many more. By uploading an image of themselves to our website, users are able to receive advice on the color and clothing they should wear based on their height and width. Not only does this help reduce the stress in picking out clothes to wear for the day, it also allows for users to adopt the latest fashion trends without having to do their own research. As they say, dress well, feel well.
