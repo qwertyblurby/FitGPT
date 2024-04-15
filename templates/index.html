@@ -1,36 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FitGPT</title>
-<link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitGPT</title>
+    <!-- Linking Font Awesome CSS for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Linking your custom CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>FitGPT</h1>
+    <h1 class="fitgpt-title">FitGPT</h1> <!-- "FitGPT" title -->
     <div class="container">
-        <h2>Upload Your Image</h2>
-        <label for="imageInput" class="file-label">Select an image</label>
-        <input type="file" id="imageInput" class="file-input" accept="image/*">
-        <button onclick="processImage()" class="button">Go!</button>
-        <div id="imagePreview"></div>
+        <h2>Upload an Image</h2> <!-- "Image Uploader" title -->
+        <form action="/upload" method="post" enctype="multipart/form-data" onsubmit="return showConfirmation()">
+            <!-- File input field -->
+            <input type="file" name="file" id="fileInput" class="file-input" accept="image/*" onchange="updateLabel()">
+            <!-- Text label for file input -->
+            <label for="fileInput" class="file-label" id="fileLabel">Choose Image</label>
+            <!-- Submit button -->
+            <button type="submit" class="button">Upload</button>
+            <!-- Message for file uploaded -->
+            <p id="fileUploadedMessage" style="display: none; color: green;">File uploaded successfully!</p>
+        </form>
     </div>
-
+    <!-- JavaScript for updating file label and showing confirmation -->
     <script>
-        function processImage() {
-            var input = document.getElementById('imageInput');
-            var preview = document.getElementById('imagePreview');
-            var file = input.files[0];
-
-            if (file) {
-                if (file.type.startsWith('image/')) {
-                    var fileName = file.name; // Capture the file name
-                    preview.innerHTML = '<p>Uploaded image: ' + fileName + '</p>';
-                } else {
-                    preview.innerHTML = '<p>Invalid file type. Please select an image.</p>';
-                }
+        // Function to update file label text
+        function updateLabel() {
+            var fileInput = document.getElementById('fileInput');
+            var fileLabel = document.getElementById('fileLabel');
+            if (fileInput.files.length > 0) {
+                fileLabel.textContent = fileInput.files[0].name;
             } else {
-                preview.innerHTML = '<p>No image selected</p>';
+                fileLabel.textContent = 'Choose Image';
+            }
+        }
+
+        // Function to show confirmation message
+        function showConfirmation() {
+            console.log("showConfirmation called"); // Check if showConfirmation is being called
+            var fileInput = document.getElementById('fileInput');
+            var fileUploadedMessage = document.getElementById('fileUploadedMessage');
+            if (fileInput.files.length > 0) {
+                fileUploadedMessage.style.display = 'block';
+                console.log("Message displayed");
+                setTimeout(function() {
+                    fileUploadedMessage.style.display = 'none';
+                    console.log("Message hidden");
+                }, 5000); // Hide message after 5 seconds
+                return true;
+            } else {
+                alert('Please choose a file to upload.');
+                return false;
             }
         }
     </script>
