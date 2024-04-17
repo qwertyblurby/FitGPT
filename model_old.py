@@ -6,6 +6,14 @@ import torchvision.transforms as transforms
 from PIL import Image
 import os
 import json
+from PIL import Image
+import os
+import preprocessor
+from preprocessor import cv2
+
+image = cv2.imread("uploads/image.jpg")
+preprocessor.preprocess(image, "uploads_processed/image.png")
+print("Processed image!")
 
 # Define the order of colors
 color_order = ["black", "gray", "white", "dark_blue", "light_blue", "cyan", "cream", "yellow", "purple", "green", "light_green", "dark_brown", "light_brown", "maroon", "red", "pink"]

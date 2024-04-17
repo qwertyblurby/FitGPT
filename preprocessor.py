@@ -14,7 +14,7 @@ model.eval()
 def preprocess(image, filename):
 
     # Load the image
-    # image = cv2.imread("image.jpg")
+    #image = cv2.imread("image.jpg")
 
     # Convert the image to RGB (PyTorch expects RGB format)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
