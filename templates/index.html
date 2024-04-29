@@ -13,7 +13,7 @@
     <h1 class="fitgpt-title">FitGPT</h1> <!-- "FitGPT" title -->
     <div class="container">
         <h2>Upload an Image</h2> <!-- "Image Uploader" title -->
-        <form action="/upload" method="post" enctype="multipart/form-data" onsubmit="return showConfirmation()">
+        <form action="/upload" method="post" enctype="multipart/form-data" onsubmit="showConfirmation()">
             <!-- File input field -->
             <input type="file" name="file" id="fileInput" class="file-input" accept="image/*" onchange="updateLabel()">
             <!-- Text label for file input -->

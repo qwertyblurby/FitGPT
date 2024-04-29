@@ -11,8 +11,10 @@ import os
 import preprocessor
 from preprocessor import cv2
 
-image = cv2.imread("uploads/image.jpg")
-preprocessor.preprocess(image, "uploads_processed/image.png")
+IMAGENAME = "64.jpg"
+image = cv2.imread(f"uploads/{IMAGENAME}")
+preprocessed_path = f"uploads_processed/{IMAGENAME}"
+preprocessor.preprocess(image, preprocessed_path)
 print("Processed image!")
 
 # Define the order of colors
@@ -37,10 +39,10 @@ class MyModel(nn.Module):
         x = self.pool(nn.functional.relu(self.conv2(x)))
         x = x.view(-1, 32 * 47 * 147)  # Flatten before fully connected layer
         x = nn.functional.relu(self.fc1(x))
-        shirt_output = self.fc_shirt(x)
-        outerwear_output = self.fc_outerwear(x)
-        pants_output = self.fc_pants(x)
-        shoes_output = self.fc_shoes(x)
+        shirt_output = nn.functional.softmax(self.fc_shirt(x))
+        outerwear_output = nn.functional.softmax(self.fc_outerwear(x))
+        pants_output = nn.functional.softmax(self.fc_pants(x))
+        shoes_output = nn.functional.softmax(self.fc_shoes(x))
         return shirt_output, outerwear_output, pants_output, shoes_output
 
 # Custom dataset class
@@ -119,3 +121,25 @@ for epoch in range(num_epochs):
     epoch_loss = running_loss / len(train_dataset)
     print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {epoch_loss:.4f}")
 
+
+image = Image.open(preprocessed_path)
+image = transform(image)
+
+model.eval()
+with torch.no_grad():
+    shirt_output, outerwear_output, pants_output, shoes_output = model(image)
+
+for article, article_output in (
+    ("Shirt", shirt_output),
+    ("Outerwear", outerwear_output),
+    ("Pants", pants_output),
+    ("Shoes", shoes_output)):
+    print(f"{article} probabilities:")
+    for color, prob in zip(color_order, article_output[0].tolist()):
+        print(f"{color}: {round(100*prob)}%")
+'''
+print("Shirt probabilities:", shirt_output[0].tolist())
+print("Outerwear probabilities:", outerwear_output[0].tolist())
+print("Pants probabilities:", pants_output[0].tolist())
+print("Shoes probabilities:", shoes_output[0].tolist())
+'''
