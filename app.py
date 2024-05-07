@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, jsonify
 import os
 
 app = Flask(__name__)
@@ -15,18 +15,19 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 def index():
     return render_template('index.html')
 
+
 # Define a route to handle the file upload
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
-        return redirect(request.url)
+        return jsonify({'message': 'No file part'}), 400
     file = request.files['file']
     if file.filename == '':
-        return redirect(request.url)
+        return jsonify({'message': 'No selected file'}), 400
     if file:
         filename = file.filename
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return redirect(url_for('index'))
+        return jsonify({'message': 'File uploaded successfully'}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
