@@ -11,11 +11,7 @@ import os
 import preprocessor
 from preprocessor import cv2
 
-IMAGENAME = "64.jpg"
-image = cv2.imread(f"uploads/{IMAGENAME}")
-preprocessed_path = f"uploads_processed/{IMAGENAME}"
-preprocessor.preprocess(image, preprocessed_path)
-print("Processed image!")
+
 
 # Define the order of colors
 color_order = ["black", "gray", "white", "dark_blue", "light_blue", "cyan", "cream", "yellow", "purple", "green", "light_green", "dark_brown", "light_brown", "maroon", "red", "pink"]
@@ -74,25 +70,6 @@ class MyDataset(Dataset):
                     data.append((img_path, label_path))
         return data
 
-# Define transformations
-transform = transforms.Compose([
-    transforms.Resize((200, 600)),
-    transforms.Grayscale(num_output_channels=1),
-    transforms.ToTensor(),
-])
-
-# Load datasets
-train_dataset = MyDataset(root_dir='training_set', transform=transform)
-train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
-
-# Initialize the model
-num_outputs = len(train_dataset[0][1]['shirt'])  # Assuming all clothing items have the same number of color categories
-model = MyModel(num_outputs)
-
-# Define loss function and optimizer
-criterion = nn.MSELoss()
-optimizer = optim.Adam(model.parameters())
-
 # Function to convert labels to tensors
 def labels_to_tensor(labels_dict):
     tensor_list = []
@@ -101,45 +78,105 @@ def labels_to_tensor(labels_dict):
     stacked_tensor = torch.stack(tensor_list, dim=1)
     return stacked_tensor
 
-# Training loop
-num_epochs = 5
-for epoch in range(num_epochs):
+def train(model, device, train_loader, optimizer, criterion, epoch):
     model.train()
     running_loss = 0.0
     for inputs, labels in train_loader:
+        # Convert data
         labels = {article: {color: tensor.float() for color, tensor in CTdict.items()} for article, CTdict in labels.items()}
+        shirt_target, outerwear_target, pants_target, shoes_target = map(
+            lambda x: labels_to_tensor(x).to(device),
+            (labels['shirt'], labels['outerwear'], labels['pants'], labels['shoes'])
+        )
+        inputs = inputs.to(device)
         optimizer.zero_grad()
         shirt_output, outerwear_output, pants_output, shoes_output = model(inputs)
-        shirt_loss = criterion(shirt_output, labels_to_tensor(labels['shirt']))
-        outerwear_loss = criterion(outerwear_output, labels_to_tensor(labels['outerwear']))
-        pants_loss = criterion(pants_output, labels_to_tensor(labels['pants']))
-        shoes_loss = criterion(shoes_output, labels_to_tensor(labels['shoes']))
+        shirt_loss = criterion(shirt_output, shirt_target)
+        outerwear_loss = criterion(outerwear_output, outerwear_target)
+        pants_loss = criterion(pants_output, pants_target)
+        shoes_loss = criterion(shoes_output, shoes_target)
         loss = shirt_loss + outerwear_loss + pants_loss + shoes_loss
         loss.backward()
         optimizer.step()
-        running_loss += loss.item() * inputs.size(0)
-    epoch_loss = running_loss / len(train_dataset)
-    print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {epoch_loss:.4f}")
+        running_loss += loss.item() # * inputs.size(0) DataLoader.batch_size
+    # epoch_loss = running_loss / len(train_dataset)
+    print(f"Epoch {epoch}, Loss: {running_loss:.4f}")
 
+def test(model, device, test_loader, criterion):
+    model.eval()
+    test_loss = 0.0
+    with torch.no_grad():
+        for inputs, labels in test_loader:
+            # Convert data
+            labels = {article: {color: tensor.float() for color, tensor in CTdict.items()} for article, CTdict in labels.items()}
+            shirt_target, outerwear_target, pants_target, shoes_target = map(
+                lambda x: labels_to_tensor(x).to(device),
+                (labels['shirt'], labels['outerwear'], labels['pants'], labels['shoes'])
+            )
+            inputs = inputs.to(device)
+            
+            shirt_output, outerwear_output, pants_output, shoes_output = model(inputs)
+            test_loss += criterion(shirt_output, shirt_target).item()
+            test_loss += criterion(outerwear_output, outerwear_target).item()
+            test_loss += criterion(pants_output, pants_target).item()
+            test_loss += criterion(shoes_output, shoes_target).item()
+    
+    test_loss /= len(test_loader.dataset)
+    print(f"Validation set loss: {test_loss:.4f}")
 
-image = Image.open(preprocessed_path)
-image = transform(image)
+def main():
+    # Define transformations
+    transform = transforms.Compose([
+        transforms.Resize((200, 600)),
+        transforms.Grayscale(num_output_channels=1),
+        transforms.ToTensor(),
+    ])
 
-model.eval()
-with torch.no_grad():
-    shirt_output, outerwear_output, pants_output, shoes_output = model(image)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-for article, article_output in (
-    ("Shirt", shirt_output),
-    ("Outerwear", outerwear_output),
-    ("Pants", pants_output),
-    ("Shoes", shoes_output)):
-    print(f"{article} probabilities:")
-    for color, prob in zip(color_order, article_output[0].tolist()):
-        print(f"{color}: {round(100*prob)}%")
-'''
-print("Shirt probabilities:", shirt_output[0].tolist())
-print("Outerwear probabilities:", outerwear_output[0].tolist())
-print("Pants probabilities:", pants_output[0].tolist())
-print("Shoes probabilities:", shoes_output[0].tolist())
-'''
+    # Load datasets
+    train_dataset = MyDataset(root_dir='training_set', transform=transform)
+    train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
+    test_dataset = MyDataset(root_dir='validation_set', transform=transform)
+    test_loader = DataLoader(test_dataset, batch_size=13, shuffle=False)
+
+    # Initialize the model
+    num_outputs = len(train_dataset[0][1]['shirt'])  # Assuming all clothing items have the same number of color categories
+    model = MyModel(num_outputs).to(device)
+
+    # Define loss function and optimizer
+    criterion = nn.CrossEntropyLoss()
+    test_criterion = nn.CrossEntropyLoss(reduction='sum')
+    optimizer = optim.Adam(model.parameters())
+
+    # Training loop
+    num_epochs = 30
+    for epoch in range(1, num_epochs + 1):
+        train(model, device, train_loader, optimizer, criterion, epoch)
+        test(model, device, test_loader, test_criterion)
+    
+    run_on_image = False
+    if run_on_image:
+        IMAGENAME = "64.jpg"
+        image = cv2.imread(f"uploads/{IMAGENAME}")
+        preprocessed_path = f"uploads_processed/{IMAGENAME}"
+        preprocessor.preprocess(image, preprocessed_path)
+        print("Processed image!")
+        
+        image = Image.open(preprocessed_path)
+        image = transform(image)
+        model.eval()
+        with torch.no_grad():
+            shirt_output, outerwear_output, pants_output, shoes_output = model(image)
+        
+        for article, article_output in (
+            ("Shirt", shirt_output),
+            ("Outerwear", outerwear_output),
+            ("Pants", pants_output),
+            ("Shoes", shoes_output)):
+            print(f"{article} probabilities:")
+            for color, prob in zip(color_order, article_output[0].tolist()):
+                print(f"{color}: {round(100*prob)}%")
+
+if __name__ == "__main__":
+    main()
