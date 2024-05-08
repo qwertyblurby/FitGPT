@@ -21,12 +21,12 @@ class MyModel(nn.Module):
         self.dropout1 = nn.Dropout(0.3)
         # self.conv2 = nn.Conv2d(4, 4, kernel_size=5)
         self.pool = nn.MaxPool2d(kernel_size=4, stride=4)
-        self.fc1 = nn.Linear(2 * 49 * 149, 128)  # Adjusted input size after pooling
+        self.fc1 = nn.Linear(2 * 49 * 149, 64)  # Adjusted input size after pooling
         self.dropout2 = nn.Dropout(0.3)
-        self.fc_shirt = nn.Linear(128, num_outputs)
-        self.fc_outerwear = nn.Linear(128, num_outputs)
-        self.fc_pants = nn.Linear(128, num_outputs)
-        self.fc_shoes = nn.Linear(128, num_outputs)
+        self.fc_shirt = nn.Linear(64, num_outputs)
+        self.fc_outerwear = nn.Linear(64, num_outputs)
+        self.fc_pants = nn.Linear(64, num_outputs)
+        self.fc_shoes = nn.Linear(64, num_outputs)
 
     def forward(self, x):
         x = self.pool(nn.functional.relu(self.conv1(x)))
