@@ -17,11 +17,11 @@ color_order = ["black", "gray", "white", "dark_blue", "light_blue", "cyan", "cre
 class MyModel(nn.Module):
     def __init__(self, num_outputs):
         super(MyModel, self).__init__()
-        self.conv1 = nn.Conv2d(1, 4, kernel_size=5)
+        self.conv1 = nn.Conv2d(1, 2, kernel_size=5)
         self.dropout1 = nn.Dropout(0.3)
         # self.conv2 = nn.Conv2d(4, 4, kernel_size=5)
         self.pool = nn.MaxPool2d(kernel_size=4, stride=4)
-        self.fc1 = nn.Linear(4 * 49 * 149, 128)  # Adjusted input size after pooling
+        self.fc1 = nn.Linear(2 * 49 * 149, 128)  # Adjusted input size after pooling
         self.dropout2 = nn.Dropout(0.3)
         self.fc_shirt = nn.Linear(128, num_outputs)
         self.fc_outerwear = nn.Linear(128, num_outputs)
@@ -32,7 +32,7 @@ class MyModel(nn.Module):
         x = self.pool(nn.functional.relu(self.conv1(x)))
         x = self.dropout1(x)
         # x = self.pool(nn.functional.relu(self.conv2(x)))
-        x = x.view(-1, 4 * 49 * 149)  # Flatten before fully connected layer
+        x = x.view(-1, 2 * 49 * 149)  # Flatten before fully connected layer
         x = nn.functional.relu(self.fc1(x))
         x = self.dropout2(x)
         shirt_output = nn.functional.relu(self.fc_shirt(x))
@@ -156,34 +156,13 @@ def main():
     # ReLU losses.    Adam: 11.7 / 8.7     Adagrad: 18.8 / 8.7    RMSprop: 16.3 / 8.9     SGD: 13.6 / 10.3
     
     # Training loop
-    num_epochs = 10
+    num_epochs = 20
     for epoch in range(1, num_epochs + 1):
         train(model, device, train_loader, optimizer, criterion, epoch)
         test(model, device, test_loader, test_criterion)
     
-    run_on_image = False
-    if run_on_image:
-        import preprocessor
-        IMAGENAME = "64.jpg"
-        image = cv2.imread(f"uploads/{IMAGENAME}")
-        preprocessed_path = f"uploads_processed/{IMAGENAME}"
-        preprocessor.preprocess(image, preprocessed_path)
-        print("Processed image!")
-        
-        image = Image.open(preprocessed_path)
-        image = transform(image)
-        model.eval()
-        with torch.no_grad():
-            shirt_output, outerwear_output, pants_output, shoes_output = model(image)
-        
-        for article, article_output in (
-            ("Shirt", shirt_output),
-            ("Outerwear", outerwear_output),
-            ("Pants", pants_output),
-            ("Shoes", shoes_output)):
-            print(f"{article} probabilities:")
-            for color, prob in zip(color_order, article_output[0].tolist()):
-                print(f"{color}: {round(100*prob)}%")
+    if input("Save model? (y/n) ").strip().lower() == "y":
+        torch.save(model.state_dict(), "fitgpt_model.pt")
 
 if __name__ == "__main__":
     main()
