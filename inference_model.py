@@ -16,8 +16,8 @@ class MyModel(nn.Module):
 		x = self.pool(nn.functional.relu(self.conv1(x)))
 		x = x.view(-1, 2 * 49 * 149)
 		x = nn.functional.relu(self.fc1(x))
-		shirt_output = nn.functional.relu(self.fc_shirt(x))
-		outerwear_output = nn.functional.relu(self.fc_outerwear(x))
-		pants_output = nn.functional.relu(self.fc_pants(x))
-		shoes_output = nn.functional.relu(self.fc_shoes(x))
+		shirt_output = nn.functional.softmax(self.fc_shirt(x))
+		outerwear_output = nn.functional.softmax(self.fc_outerwear(x))
+		pants_output = nn.functional.softmax(self.fc_pants(x))
+		shoes_output = nn.functional.softmax(self.fc_shoes(x))
 		return shirt_output, outerwear_output, pants_output, shoes_output

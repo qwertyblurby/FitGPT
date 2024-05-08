@@ -1,5 +1,10 @@
+import torch
+import torchvision.transforms as transforms
+import cv2
+from PIL import Image
 import preprocessor
 from inference_model import MyModel
+from model_old import color_order
 
 def main():
 	IMAGENAME = input("Path to image to be processed in uploads folder (ex. image.png): ")
@@ -8,7 +13,7 @@ def main():
 	preprocessor.preprocess(image, preprocessed_path)
 	print("Processed image!")
 	
-	model = MyModel()
+	model = MyModel(len(color_order))
 	model.load_state_dict(torch.load("fitgpt_model.pt"))
 	model.eval()
 	
@@ -30,9 +35,12 @@ def main():
 		("Shoes", shoes_output)):
 		print(f"{article} probabilities:")
 		probs = list(zip(color_order, article_output[0].tolist()))
-		probs.sort(key = lambda x: x[1])
+		probs.sort(key=lambda x: x[1], reverse=True)
 		for color, prob in probs:
-			print(f"{color}: {round(100*prob)}%")
+			if prob >= 0.1:
+				print(f"{color}: {round(100*prob)}%")
+			else:
+				break
 
 if __name__ == "__main__":
 	main()

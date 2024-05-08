@@ -6,23 +6,20 @@ import torchvision.transforms as transforms
 from PIL import Image
 import os
 import json
-import cv2
-
 
 # Define the order of colors
 color_order = ["black", "gray", "white", "dark_blue", "light_blue", "cyan", "cream", "yellow", "purple", "green", "light_green", "dark_brown", "light_brown", "maroon", "red", "pink"]
-
 
 # Define the neural network architecture
 class MyModel(nn.Module):
     def __init__(self, num_outputs):
         super(MyModel, self).__init__()
         self.conv1 = nn.Conv2d(1, 2, kernel_size=5)
-        self.dropout1 = nn.Dropout(0.3)
+        self.dropout1 = nn.Dropout(0.5)
         # self.conv2 = nn.Conv2d(4, 4, kernel_size=5)
         self.pool = nn.MaxPool2d(kernel_size=4, stride=4)
         self.fc1 = nn.Linear(2 * 49 * 149, 64)  # Adjusted input size after pooling
-        self.dropout2 = nn.Dropout(0.3)
+        self.dropout2 = nn.Dropout(0.5)
         self.fc_shirt = nn.Linear(64, num_outputs)
         self.fc_outerwear = nn.Linear(64, num_outputs)
         self.fc_pants = nn.Linear(64, num_outputs)
@@ -35,10 +32,10 @@ class MyModel(nn.Module):
         x = x.view(-1, 2 * 49 * 149)  # Flatten before fully connected layer
         x = nn.functional.relu(self.fc1(x))
         x = self.dropout2(x)
-        shirt_output = nn.functional.relu(self.fc_shirt(x))
-        outerwear_output = nn.functional.relu(self.fc_outerwear(x))
-        pants_output = nn.functional.relu(self.fc_pants(x))
-        shoes_output = nn.functional.relu(self.fc_shoes(x))
+        shirt_output = nn.functional.softmax(self.fc_shirt(x))
+        outerwear_output = nn.functional.softmax(self.fc_outerwear(x))
+        pants_output = nn.functional.softmax(self.fc_pants(x))
+        shoes_output = nn.functional.softmax(self.fc_shoes(x))
         return shirt_output, outerwear_output, pants_output, shoes_output
 
 # Custom dataset class
@@ -100,7 +97,7 @@ def train(model, device, train_loader, optimizer, criterion, epoch):
         optimizer.step()
         running_loss += loss.item() * inputs.size(0)
     epoch_loss = running_loss / len(train_loader.dataset)
-    print(f"Epoch {epoch}, Loss: {epoch_loss:.4f}")
+    print(f"Epoch {epoch}, Loss: {epoch_loss*100:.2f}")
 
 def test(model, device, test_loader, criterion):
     model.eval()
@@ -123,7 +120,7 @@ def test(model, device, test_loader, criterion):
             loss = shirt_loss + outerwear_loss + pants_loss + running_loss
             running_loss += loss.item() * inputs.size(0)
         epoch_loss = running_loss / len(test_loader.dataset)
-        print(f"Validation set loss: {epoch_loss:.4f}")
+        print(f"Validation set loss: {epoch_loss*100:.2f}")
 
 def main():
     # Define transformations
@@ -142,12 +139,11 @@ def main():
     test_loader = DataLoader(test_dataset, batch_size=13, shuffle=False)
 
     # Initialize the model
-    num_outputs = len(train_dataset[0][1]['shirt'])  # Assuming all clothing items have the same number of color categories
-    model = MyModel(num_outputs).to(device)
+    model = MyModel(len(color_order)).to(device)
 
     # Define loss function and optimizer
-    criterion = nn.CrossEntropyLoss()
-    test_criterion = nn.CrossEntropyLoss()
+    criterion = nn.BCELoss()
+    test_criterion = nn.BCELoss()
     optimizer = optim.AdamW(model.parameters(), lr=0.001)
     # optimizer = optim.Adagrad(model.parameters(), lr=0.001)
     # optimizer = optim.RMSprop(model.parameters(), lr=0.001)
@@ -156,7 +152,7 @@ def main():
     # ReLU losses.    Adam: 11.7 / 8.7     Adagrad: 18.8 / 8.7    RMSprop: 16.3 / 8.9     SGD: 13.6 / 10.3
     
     # Training loop
-    num_epochs = 20
+    num_epochs = 15
     for epoch in range(1, num_epochs + 1):
         train(model, device, train_loader, optimizer, criterion, epoch)
         test(model, device, test_loader, test_criterion)
