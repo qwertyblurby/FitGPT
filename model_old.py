@@ -6,11 +6,7 @@ import torchvision.transforms as transforms
 from PIL import Image
 import os
 import json
-from PIL import Image
-import os
-import preprocessor
-from preprocessor import cv2
-
+import cv2
 
 
 # Define the order of colors
@@ -21,10 +17,12 @@ color_order = ["black", "gray", "white", "dark_blue", "light_blue", "cyan", "cre
 class MyModel(nn.Module):
     def __init__(self, num_outputs):
         super(MyModel, self).__init__()
-        self.conv1 = nn.Conv2d(1, 16, kernel_size=5)
-        self.conv2 = nn.Conv2d(16, 32, kernel_size=5)
-        self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
-        self.fc1 = nn.Linear(32 * 47 * 147, 128)  # Adjusted input size after pooling
+        self.conv1 = nn.Conv2d(1, 4, kernel_size=5)
+        self.dropout1 = nn.Dropout(0.3)
+        # self.conv2 = nn.Conv2d(4, 4, kernel_size=5)
+        self.pool = nn.MaxPool2d(kernel_size=4, stride=4)
+        self.fc1 = nn.Linear(4 * 49 * 149, 128)  # Adjusted input size after pooling
+        self.dropout2 = nn.Dropout(0.3)
         self.fc_shirt = nn.Linear(128, num_outputs)
         self.fc_outerwear = nn.Linear(128, num_outputs)
         self.fc_pants = nn.Linear(128, num_outputs)
@@ -32,13 +30,15 @@ class MyModel(nn.Module):
 
     def forward(self, x):
         x = self.pool(nn.functional.relu(self.conv1(x)))
-        x = self.pool(nn.functional.relu(self.conv2(x)))
-        x = x.view(-1, 32 * 47 * 147)  # Flatten before fully connected layer
+        x = self.dropout1(x)
+        # x = self.pool(nn.functional.relu(self.conv2(x)))
+        x = x.view(-1, 4 * 49 * 149)  # Flatten before fully connected layer
         x = nn.functional.relu(self.fc1(x))
-        shirt_output = nn.functional.softmax(self.fc_shirt(x))
-        outerwear_output = nn.functional.softmax(self.fc_outerwear(x))
-        pants_output = nn.functional.softmax(self.fc_pants(x))
-        shoes_output = nn.functional.softmax(self.fc_shoes(x))
+        x = self.dropout2(x)
+        shirt_output = nn.functional.relu(self.fc_shirt(x))
+        outerwear_output = nn.functional.relu(self.fc_outerwear(x))
+        pants_output = nn.functional.relu(self.fc_pants(x))
+        shoes_output = nn.functional.relu(self.fc_shoes(x))
         return shirt_output, outerwear_output, pants_output, shoes_output
 
 # Custom dataset class
@@ -98,13 +98,13 @@ def train(model, device, train_loader, optimizer, criterion, epoch):
         loss = shirt_loss + outerwear_loss + pants_loss + shoes_loss
         loss.backward()
         optimizer.step()
-        running_loss += loss.item() # * inputs.size(0) DataLoader.batch_size
-    # epoch_loss = running_loss / len(train_dataset)
-    print(f"Epoch {epoch}, Loss: {running_loss:.4f}")
+        running_loss += loss.item() * inputs.size(0)
+    epoch_loss = running_loss / len(train_loader.dataset)
+    print(f"Epoch {epoch}, Loss: {epoch_loss:.4f}")
 
 def test(model, device, test_loader, criterion):
     model.eval()
-    test_loss = 0.0
+    running_loss = 0.0
     with torch.no_grad():
         for inputs, labels in test_loader:
             # Convert data
@@ -116,13 +116,14 @@ def test(model, device, test_loader, criterion):
             inputs = inputs.to(device)
             
             shirt_output, outerwear_output, pants_output, shoes_output = model(inputs)
-            test_loss += criterion(shirt_output, shirt_target).item()
-            test_loss += criterion(outerwear_output, outerwear_target).item()
-            test_loss += criterion(pants_output, pants_target).item()
-            test_loss += criterion(shoes_output, shoes_target).item()
-    
-    test_loss /= len(test_loader.dataset)
-    print(f"Validation set loss: {test_loss:.4f}")
+            shirt_loss = criterion(shirt_output, shirt_target)
+            outerwear_loss = criterion(outerwear_output, outerwear_target)
+            pants_loss = criterion(pants_output, pants_target)
+            shoes_loss = criterion(shoes_output, shoes_target)
+            loss = shirt_loss + outerwear_loss + pants_loss + running_loss
+            running_loss += loss.item() * inputs.size(0)
+        epoch_loss = running_loss / len(test_loader.dataset)
+        print(f"Validation set loss: {epoch_loss:.4f}")
 
 def main():
     # Define transformations
@@ -136,7 +137,7 @@ def main():
 
     # Load datasets
     train_dataset = MyDataset(root_dir='training_set', transform=transform)
-    train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
+    train_loader = DataLoader(train_dataset, batch_size=20, shuffle=True)
     test_dataset = MyDataset(root_dir='validation_set', transform=transform)
     test_loader = DataLoader(test_dataset, batch_size=13, shuffle=False)
 
@@ -146,17 +147,23 @@ def main():
 
     # Define loss function and optimizer
     criterion = nn.CrossEntropyLoss()
-    test_criterion = nn.CrossEntropyLoss(reduction='sum')
-    optimizer = optim.Adam(model.parameters())
-
+    test_criterion = nn.CrossEntropyLoss()
+    optimizer = optim.AdamW(model.parameters(), lr=0.001)
+    # optimizer = optim.Adagrad(model.parameters(), lr=0.001)
+    # optimizer = optim.RMSprop(model.parameters(), lr=0.001)
+    # optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+    # Softmax losses. Adam: 28.0 / 10.0    Adagrad: 28.2 / 9.7    RMSprop: 29.1 / 10.0    SGD: 29.1 / 10.0
+    # ReLU losses.    Adam: 11.7 / 8.7     Adagrad: 18.8 / 8.7    RMSprop: 16.3 / 8.9     SGD: 13.6 / 10.3
+    
     # Training loop
-    num_epochs = 30
+    num_epochs = 10
     for epoch in range(1, num_epochs + 1):
         train(model, device, train_loader, optimizer, criterion, epoch)
         test(model, device, test_loader, test_criterion)
     
     run_on_image = False
     if run_on_image:
+        import preprocessor
         IMAGENAME = "64.jpg"
         image = cv2.imread(f"uploads/{IMAGENAME}")
         preprocessed_path = f"uploads_processed/{IMAGENAME}"
