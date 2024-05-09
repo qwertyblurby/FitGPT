@@ -15,7 +15,7 @@
     <h1 class="fitgpt-title">FitGPT</h1> <!-- "FitGPT" title -->
     <div class="container">
         <h2>Upload an Image</h2> <!-- "Image Uploader" title -->
-        <form id="uploadForm" enctype="multipart/form-data">
+        <form id="uploadForm" enctype="multipart/form-data" onsubmit="showConfirmation()">
             <!-- File input field -->
             <input type="file" name="file" id="fileInput" class="file-input" accept="image/*" onchange="updateLabel()">
             <!-- Text label for file input -->
@@ -26,6 +26,12 @@
             <p id="fileUploadedMessage" style="display: none; color: green;">File uploaded successfully!</p>
         </form>
     </div>
+	
+	<div id="outputContainer" style="display: none">
+		<h2>FitGPT Suggestions</h2>
+		<div id="output"></div>
+	</div>
+	
     <!-- JavaScript for updating file label and showing confirmation -->
     <script>
         // Function to update file label text
@@ -70,6 +76,7 @@
                     contentType: false,
                     success: function(response){
                         $('#fileUploadedMessage').text(response.message).show();
+						displayOutput(response.output);
                         setTimeout(function(){
                             $('#fileUploadedMessage').hide();
                         }, 5000);
@@ -80,6 +87,83 @@
                 });
             });
         });
+		
+		// Define the mapping of raw names to formatted names
+		const articleMapping = {
+			'shirt': 'Shirt',
+			'outerwear': 'Outerwear',
+			'pants': 'Pants',
+			'shoes': 'Shoes'
+		};
+		
+		const colorMapping = {
+			'black': 'Black',
+			'gray': 'Gray',
+			'white': 'White',
+			'dark_blue': 'Dark Blue',
+			'light_blue': 'Light Blue',
+			'cyan': 'Cyan',
+			'cream': 'Cream',
+			'yellow': 'Yellow',
+			'purple': 'Purple',
+			'green': 'Green',
+			'light_green': 'Light Green',
+			'dark_brown': 'Dark Brown',
+			'light_brown': 'Light Brown',
+			'maroon': 'Maroon',
+			'red': 'Red',
+			'pink': 'Pink'
+		};
+		
+		// Display FitGPT output
+		function displayOutput(output) {
+			// Get the container element
+			const container = document.getElementById('outputContainer');
+			// Clear any existing content
+			container.innerHTML = '';
+			
+			// Iterate over the articleMapping object
+			for (const rawName in articleMapping) {
+				if (articleMapping.hasOwnProperty(rawName)) {
+					const formattedName = articleMapping[rawName];
+					
+					// Create a div for the article
+					const articleDiv = document.createElement('div');
+					articleDiv.classList.add('article-container');
+					
+					// Create a header element for the article
+					const header = document.createElement('h3');
+					header.textContent = formattedName;
+					articleDiv.appendChild(header);
+
+					// Create an unordered list element
+					const ul = document.createElement('ul');
+
+					// Iterate over the colors and probabilities for the current article
+					for (const color in output[rawName]) {
+						if (output[rawName].hasOwnProperty(color)) {
+							// Create a list item element
+							const li = document.createElement('li');
+							// Format the string with color and probability
+							const formattedString = `${color}: ${Math.round(output[rawName][color] * 100)}%`;
+							// Set the text content of the list item
+							li.textContent = formattedString;
+							// Append the list item to the unordered list
+							ul.appendChild(li);
+						}
+					}
+
+					// Append the unordered list to the article container
+					articleDiv.appendChild(ul);
+					
+					// Append the article div to the output container
+					container.appendChild(articleDiv);
+				}
+			}
+			
+			// Display the container
+			container.style.display = "flex";
+		}
     </script>
 </body>
 </html>

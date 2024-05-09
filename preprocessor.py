@@ -6,28 +6,21 @@ import cv2
 from PIL import Image
 from rembg import remove 
 
-
 # Load the pre-trained Faster R-CNN model
-model = models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
+model = models.detection.fasterrcnn_resnet50_fpn(weights="FasterRCNN_ResNet50_FPN_Weights.COCO_V1")
 model.eval()
 
 def preprocess(image, filename):
-
-    # Load the image
-    #image = cv2.imread("image.jpg")
-
     # Convert the image to RGB (PyTorch expects RGB format)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
+    
     # Convert image to tensor and normalize
     transform = transforms.Compose([
         transforms.ToTensor(),
     ])
     input_tensor = transform(image)
     input_tensor = input_tensor.unsqueeze(0)  # Add batch dimension
-
-
-
+    
     # Perform inference
     with torch.no_grad():
         prediction = model(input_tensor)
@@ -49,11 +42,9 @@ def preprocess(image, filename):
         # Draw bounding box on the image
         # cv2.rectangle(image, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
         
-        
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
         # adjust aspect ratio
-
         width = xmax - xmin
         height = ymax - ymin
         desired_ratio = 1 / 3
@@ -78,8 +69,6 @@ def preprocess(image, filename):
         nobg_image = remove(pil_image)
         output_image = cv2.cvtColor(np.array(nobg_image), cv2.COLOR_RGB2BGR)
         
-        
-
         # Define the transformation
         transform = transforms.Compose([
             transforms.Grayscale(num_output_channels=1)  # Convert to grayscale
@@ -99,9 +88,6 @@ def preprocess(image, filename):
         '''
         
         cv2.imwrite(filename, preprocessed_image)
-        
-
+    
     else:
         print("No person detected in image %s."%(filename))
-
-
