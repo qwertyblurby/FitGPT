@@ -1,12 +1,9 @@
 from flask import Flask, render_template, request, jsonify
 import os
-import torch
 import torchvision.transforms as transforms
-import cv2
 from PIL import Image
-import numpy as np
 import onnxruntime
-import preprocessor
+from preprocessor import preprocess
 from model_old import color_order
 
 app = Flask(__name__)
@@ -51,8 +48,7 @@ def upload_file():
         
         # Preprocess image
         preprocessed_image_path = os.path.join(app.config['PROCESSED_FOLDER'], filename)
-        image = cv2.imread(file_path)
-        preprocessor.preprocess(image, preprocessed_image_path)
+        preprocess(file_path, preprocessed_image_path)
         
         # Load preprocessed image
         image = Image.open(preprocessed_image_path)

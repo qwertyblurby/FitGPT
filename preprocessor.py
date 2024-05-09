@@ -10,7 +10,9 @@ from rembg import remove
 model = models.detection.fasterrcnn_resnet50_fpn(weights="FasterRCNN_ResNet50_FPN_Weights.COCO_V1")
 model.eval()
 
-def preprocess(image, filename):
+def preprocess(image_path, processed_path):
+    image = cv2.imread(image_path)
+    
     # Convert the image to RGB (PyTorch expects RGB format)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     
@@ -41,8 +43,6 @@ def preprocess(image, filename):
 
         # Draw bounding box on the image
         # cv2.rectangle(image, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
-        
-        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
         # adjust aspect ratio
         width = xmax - xmin
@@ -58,16 +58,11 @@ def preprocess(image, filename):
             xmin -= extra_width // 2
             xmax += (extra_width+1) // 2
         
-        # Crop the image using the adjusted bounding box coordinates
-        cropped_image = image[ymin:ymax, xmin:xmax]
-        
-        # Resize the cropped image to 200x600 pixels
-        resized_image = cv2.resize(cropped_image, (200, 600))
+        # Crop the image using the adjusted bounding box coordinates and resize to 200x600
+        image = cv2.resize(image[ymin:ymax, xmin:xmax], (200, 600))
 
         # Remove background
-        pil_image = Image.fromarray(cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB))
-        nobg_image = remove(pil_image)
-        output_image = cv2.cvtColor(np.array(nobg_image), cv2.COLOR_RGB2BGR)
+        image = remove(Image.fromarray(resized_image))
         
         # Define the transformation
         transform = transforms.Compose([
@@ -75,19 +70,13 @@ def preprocess(image, filename):
         ])
 
         # Apply the transformation
-        grayscale_image = transform(Image.fromarray(cv2.cvtColor(output_image, cv2.COLOR_BGR2RGB)))
+        image = transform(image)
 
         # Convert to CV2
-        preprocessed_image = cv2.cvtColor(np.array(grayscale_image), cv2.COLOR_GRAY2BGR)
+        preprocessed_image = cv2.cvtColor(np.array(image), cv2.COLOR_GRAY2BGR)
         
-        # Display
-        '''
-        cv2.imshow("Preprocessed Image", preprocessed_image)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-        '''
-        
-        cv2.imwrite(filename, preprocessed_image)
+        # Save image
+        cv2.imwrite(processed_path, preprocessed_image)
     
     else:
-        print("No person detected in image %s."%(filename))
+        print("No person detected in image %s."%(processed_path))
