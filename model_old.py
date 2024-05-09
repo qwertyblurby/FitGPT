@@ -17,7 +17,7 @@ class MyModel(nn.Module):
         self.conv1 = nn.Conv2d(1, 2, kernel_size=5)
         self.dropout1 = nn.Dropout(0.5)
         # self.conv2 = nn.Conv2d(4, 4, kernel_size=5)
-        self.pool = nn.MaxPool2d(kernel_size=4, stride=4)
+        self.pool = nn.MaxPool2d(4)
         self.fc1 = nn.Linear(2 * 49 * 149, 64)  # Adjusted input size after pooling
         self.dropout2 = nn.Dropout(0.5)
         self.fc_shirt = nn.Linear(64, num_outputs)
@@ -32,10 +32,10 @@ class MyModel(nn.Module):
         x = x.view(-1, 2 * 49 * 149)  # Flatten before fully connected layer
         x = nn.functional.relu(self.fc1(x))
         x = self.dropout2(x)
-        shirt_output = nn.functional.softmax(self.fc_shirt(x))
-        outerwear_output = nn.functional.softmax(self.fc_outerwear(x))
-        pants_output = nn.functional.softmax(self.fc_pants(x))
-        shoes_output = nn.functional.softmax(self.fc_shoes(x))
+        shirt_output = nn.functional.softmax(self.fc_shirt(x), dim=1)
+        outerwear_output = nn.functional.softmax(self.fc_outerwear(x), dim=1)
+        pants_output = nn.functional.softmax(self.fc_pants(x), dim=1)
+        shoes_output = nn.functional.softmax(self.fc_shoes(x), dim=1)
         return shirt_output, outerwear_output, pants_output, shoes_output
 
 # Custom dataset class
@@ -144,7 +144,7 @@ def main():
     # Define loss function and optimizer
     criterion = nn.BCELoss()
     test_criterion = nn.BCELoss()
-    optimizer = optim.AdamW(model.parameters(), lr=0.001)
+    optimizer = optim.AdamW(model.parameters(), lr=0.0007)
     # optimizer = optim.Adagrad(model.parameters(), lr=0.001)
     # optimizer = optim.RMSprop(model.parameters(), lr=0.001)
     # optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
@@ -152,7 +152,7 @@ def main():
     # ReLU losses.    Adam: 11.7 / 8.7     Adagrad: 18.8 / 8.7    RMSprop: 16.3 / 8.9     SGD: 13.6 / 10.3
     
     # Training loop
-    num_epochs = 15
+    num_epochs = 25
     for epoch in range(1, num_epochs + 1):
         train(model, device, train_loader, optimizer, criterion, epoch)
         test(model, device, test_loader, test_criterion)

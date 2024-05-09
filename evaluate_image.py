@@ -14,7 +14,8 @@ def main():
 	print("Processed image!")
 	
 	model = MyModel(len(color_order))
-	model.load_state_dict(torch.load("fitgpt_model.pt"))
+	device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+	model.load_state_dict(torch.load("fitgpt_model.pt", map_location=device))
 	model.eval()
 	
 	transform = transforms.Compose([
