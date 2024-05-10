@@ -62,7 +62,7 @@ def preprocess(image_path, processed_path):
         image = cv2.resize(image[ymin:ymax, xmin:xmax], (200, 600))
 
         # Remove background
-        image = remove(Image.fromarray(resized_image))
+        image = remove(Image.fromarray(image))
         
         # Define the transformation
         transform = transforms.Compose([
