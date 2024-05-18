@@ -1,3 +1,22 @@
+export const colorList = [
+	"black",
+	"gray",
+	"white",
+	"dark_blue",
+	"light_blue",
+	"cyan",
+	"cream",
+	"yellow",
+	"purple",
+	"green",
+	"light_green",
+	"dark_brown",
+	"light_brown",
+	"maroon",
+	"red",
+	"pink"
+];
+
 export const colorCodes = {
 	"black": "#000000",
 	"gray": "#808080",
@@ -39,9 +58,24 @@ export const colorMapping = {
 export const lightColors = [
 	"white",
 	"light_blue",
+	"cyan",
 	"cream",
 	"yellow",
 	"light_green",
 	"light_brown",
 	"pink"
 ];
+
+export const articleList = [
+	'shirt',
+	'outerwear',
+	'pants',
+	'shoes'
+];
+
+export const articleMapping = {
+	'shirt': 'Shirt',
+	'outerwear': 'Outerwear',
+	'pants': 'Pants',
+	'shoes': 'Shoes'
+};

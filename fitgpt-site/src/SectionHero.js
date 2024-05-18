@@ -1,4 +1,6 @@
-function SectionHero() {
+import FileUploadForm from './FileUploadForm';
+
+function SectionHero({ onUpload }) {
 	return (
 		<div className="grid items-center gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_600px]">
 			<div className="space-y-4">
@@ -11,12 +13,14 @@ function SectionHero() {
 					Experience the future of visual recognition today.
 				</p>
 				
-				<div className="flex items-center gap-4">
+				{/* <div className="flex items-center gap-4">
 					<button className="btn dark:bg-gray-800 dark:text-gray-50 dark:hover:bg-gray-700">
 						Upload Image
 					</button>
 					<input accept="image/*" aria-label="Upload image" className="hidden" type="file" />
-				</div>
+				</div> */}
+				<FileUploadForm onUpload={onUpload}/>
+				
 			</div>
 			
 			<img
