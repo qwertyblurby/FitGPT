@@ -12,7 +12,7 @@ function SectionRecs() {
 			/>
 			<div className="space-y-4">
 				<h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-					Visualize Classification Results
+					Detailed Recommendations
 				</h2>
 				<p className="max-w-[600px] text-gray-400 md:text-xl">
 					FitGPT provides targeted recommendations, predicting colors and probabilities

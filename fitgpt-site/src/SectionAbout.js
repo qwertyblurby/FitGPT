@@ -4,7 +4,10 @@ function SectionAbout() {
 	const profiles = [
 		[
 			"berrybear06",
-			"berry bio",
+			<>
+			<p>Aspiring programmer and engineer playing around with AI.</p>
+			<a className="link" href="https://github.com/berrybear06">Find me on GitHub</a>
+			</>,
 			"berrybearpfp.webp"
 		],
 		[

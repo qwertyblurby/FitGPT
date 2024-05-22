@@ -1,9 +1,9 @@
 function Profile({ name, bio, imageSrc }) {
 	return (
-		<div className="flex flex-row items-center space-y-4">
+		<div className="flex flex-row items-center mt-6 gap-4">
 			<img
 				alt={name}
-				className="aspect-square overflow-hidden rounded-full object-cover"
+				className="aspect-square rounded-full object-cover"
 				height="64"
 				width="64"
 				src={imageSrc.includes("http") ? imageSrc : require(`./assets/about/${imageSrc}`)}

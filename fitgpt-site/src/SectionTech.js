@@ -3,18 +3,18 @@ import Floater from './Floater';
 function SectionTech() {
 	const floaters = [
 		[
-			"Model Architecture",
-			"Our AI model is built using a state-of-the-art deep learning architecture, leveraging the latest advancements in computer vision.",
+			"Prediction Process",
+			"Input images go through a computer vision algorithm for person detection, a convolutional layer, and several fully connected layers.",
 			"TypeIcon"
 		],
 		[
 			"Training Dataset",
-			"The model has been trained on a diverse and comprehensive dataset, ensuring robust performance across a wide range of image categories.",
+			"FitGPT has been trained on fashion brand catalogs, enabling it to infer stylish colors from subjects' body shape and features.",
 			"TrainTrackIcon"
 		],
 		[
 			"Inference Speed",
-			"Our AI model is optimized for lightning-fast inference, processing images in milliseconds and delivering real-time results.",
+			"Our demo model has been converted to ONNX format to optimize its performance.",
 			"InfoIcon"
 		]
 	]
