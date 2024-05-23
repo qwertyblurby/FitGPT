@@ -12,12 +12,18 @@ function SectionAbout() {
 		],
 		[
 			"qwertyblurby",
-			"qwerty bio",
-			"placeholder.png"
+			<>
+			<p>I'm Erik Shen</p>
+			<a className='link' href="https://github.com/qwertyblurby">Find me on GitHUb</a>
+			</>,
+			"https://img.allfootballapp.com/www/M00/19/31/720x-/-/-/CgAGVmDIU3iAKA7SAAFnj6PAUHg046.jpg.webp"
 		],
 		[
 			"chickeno7",
-			"chicken bio",
+			<>
+			<p>I know how to code on occasion.</p>
+			<a className="link" href="https://github.com/chicken07">Find me on GitHub</a>
+			</>,
 			"https://cdn.discordapp.com/avatars/434530835962658817/c9b905a1828187809f6c94a91d9792ce.webp"
 		],
 		[
