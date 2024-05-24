@@ -1,4 +1,4 @@
-import FancyBar from './FancyBar';
+import MultiBar from './MultiBar';
 
 function SectionRecs() {
 	return (
@@ -20,22 +20,24 @@ function SectionRecs() {
 				</p>
 				
 				<div className="flex flex-col gap-4">
-					<div>
-						<p>Shirt</p>
-						<FancyBar color="white" percent={78} />
-					</div>
-					<div>
-						<p>Outerwear</p>
-						<FancyBar color="black" percent={39} />
-					</div>
-					<div>
-						<p>Pants</p>
-						<FancyBar color="light_blue" percent={17} />
-					</div>
-					<div>
-						<p>Shoes</p>
-						<FancyBar color="black" percent={57} />
-					</div>
+					<MultiBar article={"shirt"} data={{
+						"white": 0.78,
+						"black": 0.15
+					}} />
+					<MultiBar article={"outerwear"} data={{
+						"black": 0.39,
+						"white": 0.24,
+						"cream": 0.15
+					}} />
+					<MultiBar article={"pants"} data={{
+						"light_blue": 0.17,
+						"dark_blue": 0.14,
+						"white": 0.13
+					}} />
+					<MultiBar article={"shoes"} data={{
+						"black": 0.57,
+						"light_brown": 0.28
+					}} />
 				</div>
 			</div>
 		</div>

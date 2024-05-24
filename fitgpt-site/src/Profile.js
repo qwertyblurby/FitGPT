@@ -8,9 +8,9 @@ function Profile({ name, bio, imageSrc }) {
 				width="64"
 				src={imageSrc.includes("http") ? imageSrc : require(`./assets/about/${imageSrc}`)}
 			/>
-			<div>
-				<h3 className="text-lg font-semibold">{name}</h3>
-				<p className="text-gray-400">{bio}</p>
+			<div className="text-gray-400">
+				<h3 className="text-lg text-white font-semibold">{name}</h3>
+				{bio}
 			</div>
 		</div>
 	);

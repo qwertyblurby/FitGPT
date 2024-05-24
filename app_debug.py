@@ -1,8 +1,12 @@
 from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS
 import os
 from model_old import color_order
+from random import random
 
 app = Flask(__name__)
+
+cors = CORS(app, resources={r"/upload": {"origins": "http://localhost:3000"}})
 
 # Define the directory to store uploaded images
 UPLOAD_FOLDER = 'uploads'
@@ -10,6 +14,15 @@ if not os.path.exists(UPLOAD_FOLDER):
 	os.makedirs(UPLOAD_FOLDER)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def generate_data(length):
+	lst = []
+	for _ in range(length):
+		lst.append(random())
+	sm = sum(lst)
+	for i in range(length):
+		lst[i] = lst[i] / sm
+	return lst
 
 # Define a route to render the HTML form
 @app.route('/')
@@ -28,7 +41,7 @@ def upload_file():
 	if file:
 		filename = file.filename
 		file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-		probs_dict = {article: dict(zip(color_order, [0]*len(color_order))) for article in ("shirt", "outerwear", "pants", "shoes")}
+		probs_dict = {article: dict(zip(color_order, generate_data(len(color_order)))) for article in ("shirt", "outerwear", "pants", "shoes")}
 		return jsonify({'message': 'File processed successfully', 'output': probs_dict}), 200
 
 if __name__ == '__main__':
