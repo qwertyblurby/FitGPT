@@ -14,10 +14,12 @@ import Footer from './Footer';
 function App() {
 	const [showResults, setShowResults] = useState(false);
 	const [results, setResults] = useState(null);
+	const [uploadedImage, setUploadedImage] = useState(null);
 	
 	const onUpload = async (event) => {
 		try {
 			setResults(null);
+			setUploadedImage(null);
 			const fileInput = event.target;
 			const file = fileInput.files[0];
 			if (file) {
@@ -36,6 +38,7 @@ function App() {
 				const data = await response.json();
 				const { output } = data;
 				setResults(output);
+				setUploadedImage(URL.createObjectURL(file));
 				console.log("response received");
 			} else {
 				throw new Error("File not found");
@@ -73,10 +76,9 @@ function App() {
 					{/* Results */}
 					{showResults && (
 						<SectionWrapper>
-							<SectionResults results={results} />
+							<SectionResults results={results} uploadedImage={uploadedImage} />
 						</SectionWrapper>
 					)}
-					
 					
 					{/* Capabilities */}
 					<SectionWrapper>

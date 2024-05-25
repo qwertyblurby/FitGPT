@@ -1,5 +1,3 @@
-import FileUploadForm from './FileUploadForm';
-
 function SectionHero({ onUpload }) {
 	return (
 		<div className="grid items-center gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_600px]">
@@ -13,7 +11,21 @@ function SectionHero({ onUpload }) {
 					Try our fashion advice today!
 				</p>
 				
-				<FileUploadForm onUpload={onUpload}/>
+				<form id="uploadForm" encType="multipart/form-data" className="flex items-center gap-4">
+					<input
+						type="file"
+						name="file"
+						id="fileInput"
+						accept="image/*"
+						className="hidden"
+						aria-label="Upload Your Image"
+						onChange={onUpload}
+					/>
+					
+					<label htmlFor="fileInput" className="btn dark:bg-gray-800 dark:text-gray-50 dark:hover:bg-gray-700">
+						Upload Your Image
+					</label>
+				</form>
 			</div>
 			
 			<img
