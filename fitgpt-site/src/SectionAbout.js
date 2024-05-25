@@ -5,7 +5,7 @@ function SectionAbout() {
 		[
 			"berrybear06",
 			<>
-			<p>Aspiring programmer and engineer playing around with AI.</p>
+			<p>Interests: me, myself, and AI.</p>
 			<a className="link" href="https://github.com/berrybear06">Find me on GitHub</a>
 			</>,
 			"berrybearpfp.webp"
@@ -14,7 +14,7 @@ function SectionAbout() {
 			"qwertyblurby",
 			<>
 			<p>I'm Erik Shen</p>
-			<a className='link' href="https://github.com/qwertyblurby">Find me on GitHUb</a>
+			<a className="link" href="https://github.com/qwertyblurby">Find me on GitHub</a>
 			</>,
 			"https://img.allfootballapp.com/www/M00/19/31/720x-/-/-/CgAGVmDIU3iAKA7SAAFnj6PAUHg046.jpg.webp"
 		],
@@ -28,7 +28,10 @@ function SectionAbout() {
 		],
 		[
 			"cronchbird",
-			"cronch bio",
+			<>
+			<p>cronch bio</p>
+			<a className="link" href="https://github.com/cronchbird">Find me on GitHub</a>
+			</>,
 			"https://avatars.githubusercontent.com/u/120995210?s=256&v=4"
 		],
 	]
