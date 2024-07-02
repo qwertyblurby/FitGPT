@@ -9,6 +9,9 @@ function SectionDemo() {
 	const [uploadedImage, setUploadedImage] = useState(require("./assets/demo/sample.png"));
 	const [demoStatus, setDemoStatus] = useState("sample"); // values: sample demo_1 demo_2 loading done
 	
+	const demoServerURL = "https://fitgpt-demo.ondigitalocean.app/upload"
+	// "http://localhost:5000/upload"
+	
 	const onUpload = async (event) => {
 		try {
 			setResults(null);
@@ -27,7 +30,7 @@ function SectionDemo() {
 				controller.abort();
 			}, 20000); // 20 seconds timeout
 			
-			const response = await fetch('http://imaginarysiteherelmaodoesntexist.com:5000/upload', {
+			const response = await fetch(demoServerURL, {
 				method: 'POST',
 				body: formData,
 				signal: controller.signal,
