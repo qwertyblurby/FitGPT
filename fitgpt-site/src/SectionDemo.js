@@ -17,29 +17,37 @@ function SectionDemo() {
 			const file = fileInput.files[0];
 			const fileURL = URL.createObjectURL(file);
 			setUploadedImage(fileURL);
-			if (file) {
-				const formData = new FormData();
-				formData.append('file', file);
-				const response = await fetch('http://localhost:5000/upload', {
-					method: 'POST',
-					body: formData
-				});
-				
-				if (!response.ok) {
-					throw new Error("Network response was not ok");
-				}
-				
-				const data = await response.json();
-				setResults(data.output);
-				setDemoStatus("done");
-				setUploadedImage(fileURL);
-				console.log("response received");
-			} else {
-				throw new Error("File not found");
+
+			const formData = new FormData();
+			formData.append('file', file);
+
+			// Create an AbortController to manage the timeout
+			const controller = new AbortController();
+			const timeoutId = setTimeout(() => {
+				controller.abort();
+			}, 20000); // 20 seconds timeout
+			
+			const response = await fetch('http://imaginarysiteherelmaodoesntexist.com:5000/upload', {
+				method: 'POST',
+				body: formData,
+				signal: controller.signal,
+			});
+
+			clearTimeout(timeoutId); // Clear the timeout if request completes
+
+			if (!response.ok) {
+				throw new Error("Network response was not ok");
 			}
+
+			const data = await response.json();
+			setResults(data.output);
+			setDemoStatus("done");
+			setUploadedImage(fileURL);
+			console.log("response received");
 		} catch (error) {
 			console.error("Error: ", error);
-		};
+			setDemoStatus("error");
+		}
 	};
 	
 	const updateStatus = (buttonId) => {
