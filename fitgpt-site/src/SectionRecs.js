@@ -1,16 +1,15 @@
-import MultiBar from './MultiBar';
-import UploadIcon from './assets/icons/UploadIcon';
 import { useState } from 'react';
-import SectionResults from './SectionResults';
+import DemoResults from './assets/demo/DemoResults';
 import DemoData from './assets/demo/DemoData';
+import DemoImage from './assets/demo/DemoImage';
+import UploadButton from './assets/demo/UploadButton';
 
 function SectionRecs() {
-	const [results, setResults] = useState(null);
+	const [results, setResults] = useState(DemoData("sample").results);
 	const [uploadedImage, setUploadedImage] = useState(require("./assets/demo/sample.png"));
 	const [demoStatus, setDemoStatus] = useState("sample"); // values: sample demo_1 demo_2 loading done
 	
 	const onUpload = async (event) => {
-		console.log("call")
 		try {
 			setResults(null);
 			setDemoStatus("loading");
@@ -20,7 +19,7 @@ function SectionRecs() {
 			setUploadedImage(fileURL);
 			if (file) {
 				const formData = new FormData();
-				formData.append('file', file);;
+				formData.append('file', file);
 				const response = await fetch('http://localhost:5000/upload', {
 					method: 'POST',
 					body: formData
@@ -48,7 +47,7 @@ function SectionRecs() {
 		const data = DemoData(buttonId);
 		setResults(data.results);
 		setUploadedImage(data.imageSrc);
-	}
+	};
 	
 	return (
 		<div className="space-y-8">
@@ -59,51 +58,9 @@ function SectionRecs() {
 			<div className="lg:flex gap-4 md:gap-8">
 				{/* Demos */}
 				<div className="flex gap-4">
-					{/* Demo 1 */}
-					<button
-						className="btn relative w-40 h-60 rounded-lg overflow-hidden p-0"
-						onClick={(e) => {updateStatus("demo_1")}}
-					>
-						<img
-							src={require("./assets/demo/demo_1.jpg")}
-							alt="Demo 1"
-							className="object-cover w-full h-full"
-						/>
-					</button>
-
-					{/* Demo 2 */}
-					<button
-						className="btn relative w-40 h-60 rounded-lg overflow-hidden p-0"
-						onClick={(e) => {updateStatus("demo_2")}}
-					>
-						<img
-							src={require("./assets/demo/demo_2.jpg")}
-							alt="Demo 2"
-							className="object-cover w-full h-full"
-						/>
-					</button>
-					
-					{/* Upload Button */}
-					<div className="relative w-40 h-60">
-						<form id="uploadForm" encType="multipart/form-data" className="size-full">
-							<label
-								htmlFor="fileInput"
-								className="btn rounded-lg dark:bg-gray-800 dark:text-gray-50 dark:hover:bg-gray-700 size-full flex flex-col"
-							>
-								<p className="text-gray-300">Upload</p>
-								<UploadIcon className="w-16 h-16 text-gray-300" />
-							</label>
-							<input
-								type="file"
-								name="file"
-								id="fileInput"
-								accept="image/*"
-								className="hidden"
-								aria-label="Upload your image"
-								onChange={onUpload}
-							/>
-						</form>
-					</div>
+					<DemoImage imageType="demo_1" updateStatus={updateStatus} />
+					<DemoImage imageType="demo_2" updateStatus={updateStatus} />
+					<UploadButton onUpload={onUpload} />
 				</div>
 				
 				{/* Description */}
@@ -123,10 +80,7 @@ function SectionRecs() {
 					className="overflow-hidden rounded-xl max-h-96"
 					src={uploadedImage}
 				/>
-				
-				<div className="bg-gray-800 rounded-lg p-6 flex-grow">
-					<SectionResults results={results} uploadedImage={uploadedImage} demoStatus={demoStatus} />
-				</div>
+				<DemoResults results={results} demoStatus={demoStatus} />
 			</div>
 		</div>
 	)

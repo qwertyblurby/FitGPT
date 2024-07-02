@@ -1,12 +1,10 @@
-import { useState } from 'react';
 import './App.css';
 import GoogleFontLoader from 'react-google-font-loader';
 import SectionWrapper from './SectionWrapper';
 import Header from './Header';
 import SectionHero from './SectionHero';
-import SectionResults from './SectionResults';
-import SectionCaps from './SectionCaps';
 import SectionRecs from './SectionRecs';
+import SectionCaps from './SectionCaps';
 import SectionTech from './SectionTech';
 import SectionAbout from './SectionAbout';
 import Footer from './Footer';
@@ -32,7 +30,7 @@ function App() {
 				
 				<main>
 					{/* Title and image */}
-					<SectionWrapper id="">
+					<SectionWrapper>
 						<SectionHero />
 					</SectionWrapper>
 					
