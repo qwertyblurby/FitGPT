@@ -4,7 +4,7 @@ import DemoData from './assets/demo/DemoData';
 import DemoImage from './assets/demo/DemoImage';
 import UploadButton from './assets/demo/UploadButton';
 
-function SectionRecs() {
+function SectionDemo() {
 	const [results, setResults] = useState(DemoData("sample").results);
 	const [uploadedImage, setUploadedImage] = useState(require("./assets/demo/sample.png"));
 	const [demoStatus, setDemoStatus] = useState("sample"); // values: sample demo_1 demo_2 loading done
@@ -64,14 +64,11 @@ function SectionRecs() {
 				</div>
 				
 				{/* Description */}
-				<div className="flex flex-col mt-5 lg:mt-2 space-y-4 lg:ml-4 ">
-					<p className="text-gray-400 md:text-xl lg:text-lg">
-						FitGPT provides suggestions by article of clothing, improving every aspect of an outfit. We give you a clean visual summary of the results.
-					</p>
-					<p className="text-gray-400 md:text-xl lg:text-lg">
-						Try FitGPT now by uploading a picture of yourself, or select one of our demo pictures.
-					</p>
-				</div>
+				<p className="mt-5 lg:mt-2 lg:ml-4 text-gray-400 md:text-xl lg:text-lg">
+					FitGPT provides suggestions by article of clothing, improving every aspect of an outfit. We give you a clean visual summary of the results.
+					<br /> <br />
+					Try FitGPT now by uploading a picture of yourself, or select one of our demo pictures.
+				</p>
 			</div>
 			
 			<div className="gap-6 lg:flex lg:gap-12 pt-12">
@@ -86,4 +83,4 @@ function SectionRecs() {
 	)
 }
 
-export default SectionRecs;
+export default SectionDemo;

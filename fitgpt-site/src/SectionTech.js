@@ -3,26 +3,27 @@ import Floater from './Floater';
 function SectionTech() {
 	const floaters = [
 		[
-			"Prediction Process",
-			"Input images go through a computer vision algorithm for person detection, a convolutional layer, and several fully connected layers.",
-			"TypeIcon"
+			"Model Architecture",
+			"FitGPT uses a reliable VGGNet-inspired architecture, a series of convolutional blocks followed by classifier layers. A pretrained ResNet FPN locates the person within the input image, telling the model where to look.",
+			"InfoIcon"
 		],
 		[
-			"Training Dataset",
-			"FitGPT has been trained on fashion brand catalogs, enabling it to infer stylish colors from subjects' body shape and features.",
+			"Training Process",
+			"FitGPT has been trained on a diverse array of fashion brand catalogs, enabling it to infer stylish colors from subjects' body shape and features. We used the AdamW optimizer with stepping learning rate decay.",
 			"TrainTrackIcon"
 		],
 		[
 			"Inference Speed",
-			"Our demo model has been converted to ONNX format to optimize its performance.",
-			"InfoIcon"
+			"Only a few MB in file size, our demo model uses the ONNX runtime for optimal performance. The ResNet FPN, rather than our model itself, contributes the most to inference time.",
+			"TypeIcon"
 		]
 	]
 	
 	return (
 		<div className="space-y-6">
 			<h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Technical Details</h2>
-			<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+			<p className="text-gray-400">We reduce the task of outfit recommendations to a set of image classification problems, simplifying the AI architecture involved.</p>
+			<div className="grid grid-cols-1 gap-6 sm:grid-cols-1 lg:grid-cols-3">
 				{floaters.map(([titleText, description, iconSrc]) => (
 					<Floater
 						key={titleText}

@@ -3,7 +3,7 @@ import GoogleFontLoader from 'react-google-font-loader';
 import SectionWrapper from './SectionWrapper';
 import Header from './Header';
 import SectionHero from './SectionHero';
-import SectionRecs from './SectionRecs';
+import SectionDemo from './SectionDemo';
 import SectionCaps from './SectionCaps';
 import SectionTech from './SectionTech';
 import SectionAbout from './SectionAbout';
@@ -34,15 +34,14 @@ function App() {
 						<SectionHero />
 					</SectionWrapper>
 					
-					{/* Results or demo recommendations - showResults thing and sectionresults removed */}
-					
-					<SectionWrapper id="demo">
-						<SectionRecs />
-					</SectionWrapper>
-					
 					{/* Capabilities */}
 					<SectionWrapper id="caps">
 						<SectionCaps />
+					</SectionWrapper>
+					
+					{/* Demo */}
+					<SectionWrapper id="demo">
+						<SectionDemo />
 					</SectionWrapper>
 					
 					{/* Technical details */}

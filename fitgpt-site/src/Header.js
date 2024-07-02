@@ -37,7 +37,7 @@ function Header() {
 				
 				<div className="navbar-end">
 					<a href="#demo"
-						className="btn dark:bg-gray-800 dark:text-gray-50 dark:hover:bg-gray-700"
+						className="btn dark:bg-gray-700 dark:text-gray-50 dark:hover:bg-gray-500"
 					>
 						Try it Now
 					</a>
