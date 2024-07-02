@@ -12,43 +12,6 @@ import SectionAbout from './SectionAbout';
 import Footer from './Footer';
 
 function App() {
-	const [showResults, setShowResults] = useState(false);
-	const [results, setResults] = useState(null);
-	const [uploadedImage, setUploadedImage] = useState(null);
-	
-	const onUpload = async (event) => {
-		try {
-			setResults(null);
-			setUploadedImage(null);
-			const fileInput = event.target;
-			const file = fileInput.files[0];
-			if (file) {
-				const formData = new FormData();
-				formData.append('file', file);
-				setShowResults(true);
-				const response = await fetch('http://localhost:5000/upload', {
-					method: 'POST',
-					body: formData
-				});
-				
-				if (!response.ok) {
-					throw new Error("Network response was not ok");
-				}
-				
-				const data = await response.json();
-				const { output } = data;
-				setResults(output);
-				setUploadedImage(URL.createObjectURL(file));
-				console.log("response received");
-			} else {
-				throw new Error("File not found");
-			}
-		} catch (error) {
-			console.error("Error: ", error);
-		};
-	};
-	
-	
 	return (
 		<>
 			<GoogleFontLoader
@@ -64,39 +27,33 @@ function App() {
 				]}
 			/>
 			
-			<div className="App">
+			<div className="App" id="home">
 				<Header />
 				
 				<main>
 					{/* Title and image */}
-					<SectionWrapper>
-						<SectionHero onUpload={onUpload}/>
+					<SectionWrapper id="">
+						<SectionHero />
 					</SectionWrapper>
 					
-					{/* Results */}
-					{showResults && (
-						<SectionWrapper>
-							<SectionResults results={results} uploadedImage={uploadedImage} />
-						</SectionWrapper>
-					)}
+					{/* Results or demo recommendations - showResults thing and sectionresults removed */}
 					
-					{/* Capabilities */}
-					<SectionWrapper>
-						<SectionCaps />
-					</SectionWrapper>
-					
-					{/* Demo recommendations */}
-					<SectionWrapper>
+					<SectionWrapper id="demo">
 						<SectionRecs />
 					</SectionWrapper>
 					
+					{/* Capabilities */}
+					<SectionWrapper id="caps">
+						<SectionCaps />
+					</SectionWrapper>
+					
 					{/* Technical details */}
-					<SectionWrapper>
+					<SectionWrapper id="tech">
 						<SectionTech />
 					</SectionWrapper>
 					
 					{/* About us */}
-					<SectionWrapper>
+					<SectionWrapper id="about">
 						<SectionAbout />
 					</SectionWrapper>
 				</main>

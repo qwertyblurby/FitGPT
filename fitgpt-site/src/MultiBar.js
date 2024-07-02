@@ -16,7 +16,7 @@ function MultiBar({ article, data }) {
 	};
 
 	return (
-		<div className="space-y-2">
+		<div className="space-y-1">
 			<div className="flex justify-between items-center">
 				<span className="font-semibold">{articleMapping[article]}</span>
 				<span className={`transition-opacity ${hoveredSection ? 'opacity-100' : 'opacity-0'}`}>{hoveredLabel}</span>

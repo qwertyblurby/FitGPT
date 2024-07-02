@@ -8,9 +8,9 @@ from model_old import color_order
 
 def main():
 	IMAGENAME = input("Path to image to be processed in uploads folder (ex. image.png): ")
-	image = cv2.imread(f"uploads/{IMAGENAME}")
+	image_path = f"uploads/{IMAGENAME}"
 	preprocessed_path = f"uploads_processed/{IMAGENAME}"
-	preprocessor.preprocess(image, preprocessed_path)
+	preprocessor.preprocess(image_path, preprocessed_path)
 	print("Processed image!")
 	
 	model = MyModel(len(color_order))
@@ -42,6 +42,12 @@ def main():
 				print(f"{color}: {round(100*prob)}%")
 			else:
 				break
+	
+	if input("Dump to json? (y/n) ").strip().lower() == "y":
+		import json
+		probs_dict = {article: dict(zip(color_order, map(float, article_output[0]))) for article, article_output in zip(("shirt", "outerwear", "pants", "shoes"), (shirt_output, outerwear_output, pants_output, shoes_output))}
+		with open(f"uploads/{IMAGENAME}_results.json", "w") as f:
+			json.dump(probs_dict, f, indent=4)
 
 if __name__ == "__main__":
 	main()
