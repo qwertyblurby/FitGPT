@@ -11,7 +11,7 @@ function SectionAbout() {
 		[
 			"qwertyblurby",
 			<p>I'm Erik Shen</p>,
-			"https://img.allfootballapp.com/www/M00/19/31/720x-/-/-/CgAGVmDIU3iAKA7SAAFnj6PAUHg046.jpg.webp",
+			"https://cdn.discordapp.com/attachments/624439411014369292/1257900780808044615/159072517.png?ex=668616e4&is=6684c564&hm=04d74439ef4fa9687dff572ee360f1fd6e9d6150e51581ee3e6ecbabcd0a1743&",
 			"https://github.com/qwertyblurby"
 		],
 		[
